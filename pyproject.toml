@@ -1,10 +1,16 @@
 [project]
-name = "claude-code-uv-template"
+name = "tastytrade-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP server exposing Tastytrade SDK as tools for Claude Code"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "tastytrade-sdk",
+    "mcp[cli]",
+]
+
+[project.scripts]
+tastytrade-mcp = "src.server:main"
 
 [dependency-groups]
 dev = [
@@ -31,6 +37,9 @@ target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W"]
+
+[tool.mypy]
+ignore_missing_imports = true
 
 [tool.coverage.run]
 source = ["src"]

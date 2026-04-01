@@ -11,3 +11,7 @@ wheels/
 
 # Environment variables
 .env
+
+# MCP config (contains credentials)
+.claude/mcp.json
+.mcp.json
