@@ -11,3 +11,9 @@ wheels/
 
 # Environment variables
 .env
+
+# Coverage
+.coverage
+
+# Proposed trades (local only)
+proposed-trades.md

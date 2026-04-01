@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "tastytrade": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "-c",
+        "set -a && source .env && set +a && exec uv run python -m src.server"
+      ],
+      "env": {}
+    }
+  }
+}

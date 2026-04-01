@@ -1,10 +1,13 @@
 [project]
-name = "claude-code-uv-template"
+name = "tastytrade-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP server for TastyTrade brokerage API"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "mcp[cli]>=1.0",
+    "httpx>=0.27",
+]
 
 [dependency-groups]
 dev = [
@@ -14,6 +17,7 @@ dev = [
     "pytest-cov>=6.0",
     "pytest-mock>=3.0",
     "pytest-xdist>=3.0",
+    "pytest-asyncio>=0.23",
     "python-dotenv>=1.0",
 ]
 
