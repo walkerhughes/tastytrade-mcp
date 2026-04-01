@@ -1,77 +1,85 @@
-# claude-code-uv-template
+# tastytrade-mcp
 
-A Python project template for developing with [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and [uv](https://docs.astral.sh/uv/).
+An MCP server that connects [Claude Code](https://docs.anthropic.com/en/docs/claude-code) to the [TastyTrade Open API](https://developer.tastytrade.com/getting-started/), giving Claude direct access to your brokerage account, market data, and order management.
 
-## What's Included
+## Features
 
-- **uv** for fast Python environment and dependency management
-- **pytest** with `unit` and `integration` markers pre-configured
-- **ruff** for linting and formatting
-- **mypy** for type checking
-- **pytest-cov** for coverage reporting (80% threshold)
-- **pytest-mock** and **pytest-xdist** for mocking and parallel test runs
-- **python-dotenv** for environment variable management
-- **GitHub Actions CI** workflow out of the box
-- **Makefile** with common dev commands
-- **Claude Code hooks** that auto-lint `.py` files after edits
-- **CLAUDE.md** with development guidelines for Claude Code agents
-- **src layout** for clean package structure
+- **Account & Portfolio** — balances, positions, trading status, transaction history, net liq history
+- **Order Management** — preview (dry-run), place, cancel, and replace orders
+- **Market Data** — symbol search, equity info, option chains (with expiration/strike filtering), IV rank, liquidity metrics, dividends, earnings
+- **Watchlists** — personal and public TastyTrade watchlists
+
+Authentication uses OAuth2 refresh-token flow with automatic token refresh.
 
 ## Getting Started
 
+### 1. Install dependencies
+
 ```bash
-# Install dependencies
 uv sync
+```
 
-# Run tests
-make test
+### 2. Configure credentials
 
-# Lint and format
-make lint
-make lint-fix
-make format
+Copy `.env.example` to `.env` and fill in your TastyTrade API credentials:
+
+```bash
+cp .env.example .env
+```
+
+You'll need a registered OAuth client from TastyTrade. Set these values in `.env`:
+
+```
+TT_CLIENT_ID=<your client id>
+TT_SECRET=<your client secret>
+TT_REFRESH=<your refresh token>
+API_BASE_URL=api.tastyworks.com
+```
+
+### 3. Run with Claude Code
+
+The `.mcp.json` is already configured. Start Claude Code from the project directory and the TastyTrade MCP server will be available automatically.
+
+## Example
+
+Once running, you can ask Claude things like:
+
+> "What are my current positions and P&L?"
+
+Claude will call `get_accounts` to find your account number, then `get_positions` to fetch your portfolio — all through the MCP server:
+
+```
+User: What are my current positions?
+
+Claude: [calls get_accounts]  →  account XXXXXXXX
+        [calls get_positions] →  returns portfolio data
+
+You have 3 open positions:
+  AAPL  100 shares   +$320.50 (+2.1%)
+  SPY   2 puts       -$45.00  (-8.3%)
+  TSLA  5 calls      +$180.00 (+12.5%)
+
+Net liquidating value: $12,345.67
+```
+
+You can also ask Claude to analyze option chains, check IV rank across symbols, preview trades before placing them, and manage live orders.
+
+## Development
+
+```bash
+make check             # lint + typecheck + unit tests
+make test-unit         # unit tests only
+make coverage          # tests with coverage report
 ```
 
 ## Project Structure
 
 ```
-├── src/                          # Application source code
-│   └── claude_code_uv_template/  # Main package (rename to your project)
-├── tests/
-│   ├── conftest.py               # Shared test fixtures
-│   ├── unit/                     # Unit tests (@pytest.mark.unit)
-│   └── integration/              # Integration tests (@pytest.mark.integration)
-├── .claude/
-│   └── settings.json             # Claude Code hooks config
-├── .github/
-│   └── workflows/ci.yml          # GitHub Actions CI
-├── .githooks/
-│   └── pre-commit                # Pre-commit hook (runs make check)
-├── .env.example                  # Environment variable template
-├── CLAUDE.md                     # Development guidelines for Claude Code
-├── Makefile                      # Dev commands (lint, format, test)
-└── pyproject.toml                # Project config and tool settings
+├── src/
+│   ├── client.py      # TastyTrade API client (OAuth2 auth)
+│   └── server.py      # MCP server with 22 tools
+├── tests/unit/        # 44 unit tests (94% coverage)
+├── .mcp.json          # MCP server config for Claude Code
+├── .env.example       # Credential template
+└── pyproject.toml     # Dependencies and tool config
 ```
-
-## Testing
-
-Tests use pytest with two markers:
-
-```bash
-make test              # Run all tests
-make test-unit         # Run only @pytest.mark.unit tests
-make test-integration  # Run only @pytest.mark.integration tests
-make coverage          # Run tests with coverage report
-make check             # Run lint + typecheck + unit tests (also runs as pre-commit hook)
-```
-
-## CI
-
-GitHub Actions runs `make check` and `make coverage` on every push to `main` and on PRs. See `.github/workflows/ci.yml`.
-
-## Customizing
-
-1. Rename the package directory under `src/` to match your project name
-2. Update `name` and `description` in `pyproject.toml`
-3. Update `tool.hatch.build.targets.wheel.packages` in `pyproject.toml`
-4. Update `CLAUDE.md` with project-specific guidelines
