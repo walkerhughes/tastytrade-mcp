@@ -15,5 +15,8 @@ wheels/
 # Coverage
 .coverage
 
+# Claude skills (local only)
+.claude/skills/
+
 # Proposed trades (local only)
 proposed-trades.md
