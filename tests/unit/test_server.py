@@ -24,6 +24,7 @@ from src.server import (
     get_order_history,
     get_positions,
     get_public_watchlist,
+    get_quote,
     get_quote_token,
     get_trading_status,
     get_transactions,
@@ -497,6 +498,29 @@ async def test_get_public_watchlist():
     with patch("src.server._get_client", return_value=mock):
         result = json.loads(await get_public_watchlist(name="Popular"))
         assert result["name"] == "Popular"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_get_quote_equities():
+    mock = _mock_client(
+        get=AsyncMock(
+            return_value={
+                "data": {
+                    "items": [
+                        {"symbol": "SPY", "bid": 550.10, "ask": 550.20, "last": 550.15, "volume": 1000000},
+                        {"symbol": "AAPL", "bid": 210.50, "ask": 210.60, "last": 210.55, "volume": 500000},
+                    ]
+                }
+            }
+        )
+    )
+    with patch("src.server._get_client", return_value=mock):
+        result = json.loads(await get_quote(symbols="SPY,AAPL"))
+        assert len(result) == 2
+        assert result[0]["symbol"] == "SPY"
+        assert result[0]["bid"] == 550.10
+        mock.get.assert_called_once_with("/market-data/by-type", params={"equity": "SPY,AAPL"})
 
 
 @pytest.mark.unit

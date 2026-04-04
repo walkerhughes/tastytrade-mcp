@@ -524,6 +524,32 @@ async def get_public_watchlist(name: str) -> str:
 
 
 @mcp.tool()
+async def get_quote(symbols: str) -> str:
+    """Get live quotes for equities: bid, ask, last, volume, OHLC.
+
+    Args:
+        symbols: Comma-separated ticker symbols (e.g. "AAPL,SPY,TSLA").
+            Supports equity, index, and equity-option symbols.
+            Max 100 symbols per request.
+    """
+    sym_list = [s.strip() for s in symbols.split(",") if s.strip()]
+    params: dict[str, str] = {}
+    equity_syms = []
+    option_syms = []
+    for s in sym_list:
+        if len(s) > 6 or any(c.isdigit() for c in s[:6].rstrip()):
+            option_syms.append(s)
+        else:
+            equity_syms.append(s)
+    if equity_syms:
+        params["equity"] = ",".join(equity_syms)
+    if option_syms:
+        params["equity-option"] = ",".join(option_syms)
+    resp = await _get_client().get("/market-data/by-type", params=params)
+    return _fmt(_items(resp))
+
+
+@mcp.tool()
 async def get_quote_token() -> str:
     """Get a DXLink streaming quote token for real-time market data."""
     resp = await _get_client().get("/api-quote-tokens")
