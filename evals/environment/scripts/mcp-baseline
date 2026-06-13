@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Launch the baseline (main-branch) server over stdio against the mock API.
+set -euo pipefail
+require-local-api
+start-mock
+exec uv run --project /opt/mcp-baseline python -m src.server

@@ -7,7 +7,7 @@ if curl -sf http://localhost:8080/oauth/token -X POST >/dev/null 2>&1; then
   exit 0
 fi
 
-cd /opt/mcp-v2
+cd /opt/mcp-candidate
 nohup uv run uvicorn tests.fixtures.mock_api.app:app --host 0.0.0.0 --port 8080 \
   >/tmp/mock-api.log 2>&1 &
 

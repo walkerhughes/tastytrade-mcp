@@ -1,11 +1,12 @@
-# Run Claude Code against both the v1 (main) and v2 (refactor) servers over the same tasks.
-# The server to use lives on each agent config, so one job covers both. Harbor records the
-# reward, phase timings, and token and cost totals per trial. Compare with `harbor view jobs`.
+# Run Claude Code against both the baseline (main) and candidate (refactor) servers over the
+# same tasks. The server to use lives on each agent config, so one job covers both. Harbor
+# records the reward, phase timings, and token and cost totals per trial. Compare with
+# `harbor view jobs`.
 #
 # Before running:
-#   docker build -t tastytrade-bench evaluation/harbor/environment
+#   docker build -t tastytrade-bench evals/environment
 #   export ANTHROPIC_API_KEY=...
-#   harbor run -c evaluation/harbor/job.yaml
+#   harbor run -c evals/job.yaml
 jobs_dir: jobs
 n_attempts: 3 # trials per task per agent
 
@@ -24,13 +25,13 @@ agents:
     mcp_servers:
       - name: tastytrade
         transport: stdio
-        command: mcp-v1 # runs the main-branch server
+        command: mcp-baseline # runs the main-branch server
   - name: claude-code
     model_name: anthropic/claude-fable-5
     mcp_servers:
       - name: tastytrade
         transport: stdio
-        command: mcp-v2 # runs the refactor-branch server
+        command: mcp-candidate # runs the refactor-branch server
 
 datasets:
   - path: ./tasks

@@ -1,27 +1,29 @@
-# Harbor benchmark (v1 vs v2)
+# Evals
 
-This benchmark runs Claude Code against the v1 server (`main`) and the v2 server
-(`mcp-server-refactor`) over the same set of tasks, using the
-[Harbor](https://github.com/laude-institute/harbor) framework. The agent is the same in both
-runs and only the MCP server changes, so any difference in success rate, tool calls, tokens,
-or latency comes from the server itself.
+The server is evaluated at the agent-loop level. Claude Code drives the tools over a set of
+tasks, once against the baseline server (`main`) and once against the candidate server
+(`mcp-server-refactor`), using the [Harbor](https://github.com/laude-institute/harbor)
+framework. The agent is the same in both runs and only the MCP server changes, so any
+difference in success rate, tool calls, tokens, or latency comes from the server itself.
 
 Every task runs against the mock Tastytrade API in `tests/fixtures/mock_api`, so the answers
-are fixed and reproducible and no run touches a real account or live market data.
+are fixed and reproducible and no run touches a real account or live market data. The fast
+deterministic checks for argument correction and error guidance live alongside the unit tests,
+in `tests/unit/test_misuse_evals.py`.
 
 ## Layout
 
 ```
-harbor/
+evals/
   environment/
     Dockerfile            # python and uv, both server checkouts, the mock API
-    scripts/              # require-local-api, start-mock, mcp-v1, mcp-v2
+    scripts/              # require-local-api, start-mock, mcp-baseline, mcp-candidate
   tasks/<name>/
     task.toml             # task config
     instruction.md        # the prompt the agent sees
     tests/test.sh         # verifier, writes a reward to /logs/verifier/reward.txt
     solution/solve.sh     # oracle, writes the known-correct answer
-  job.yaml                # runs the v1 and v2 agents over every task
+  job.yaml                # runs the baseline and candidate agents over every task
   generate_tasks.py       # regenerates the tasks from the fixtures
   validate_local.sh       # checks every verifier without Harbor or Docker
 ```
@@ -40,18 +42,18 @@ disagree with the data the agent sees. The two anchor values are a total unreali
 +$700 and an SPY ATM strike of 200. Regenerate after changing a fixture:
 
 ```bash
-python evaluation/harbor/generate_tasks.py
+python evals/generate_tasks.py
 ```
 
 ## Run it
 
 ```bash
-# 1. Build the agent image. It clones both server versions and the mock API.
-docker build -t tastytrade-bench evaluation/harbor/environment
+# 1. Build the agent image. It clones both servers and the mock API.
+docker build -t tastytrade-bench evals/environment
 
 # 2. Run both servers over every task, three trials each.
 export ANTHROPIC_API_KEY=...
-harbor run -c evaluation/harbor/job.yaml
+harbor run -c evals/job.yaml
 
 # 3. Compare the two side by side.
 harbor view jobs
@@ -69,7 +71,7 @@ confirms the verifier awards a reward of 1. It then feeds an empty answer and co
 reward is 0. This is the local stand-in for `harbor run -a oracle`:
 
 ```bash
-bash evaluation/harbor/validate_local.sh
+bash evals/validate_local.sh
 # 12 passed, 0 failed
 ```
 
@@ -80,7 +82,7 @@ uses throwaway credentials, and `require-local-api` refuses to start a server un
 `API_BASE_URL` points at localhost. Even the order-placement task only reaches the mock, which
 records the order to a file the verifier reads.
 
-The mock runs in the container as a background process that the server wrapper starts on
-first use, so the benchmark is not tied to the local Docker provider the way a multi-container
-setup would be. `network_mode: public` is set so the agent can reach the Anthropic API; the
+The mock runs in the container as a background process that the server wrapper starts on first
+use, so the benchmark is not tied to the local Docker provider the way a multi-container setup
+would be. `network_mode: public` is set so the agent can reach the Anthropic API; the
 Tastytrade calls stay on localhost.

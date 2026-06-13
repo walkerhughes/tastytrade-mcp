@@ -14,7 +14,7 @@ import httpx
 
 from .logging import get_logger
 
-try:  # pydantic is a hard dep in v2, but keep import resilient for partial installs
+try:  # pydantic is a hard dependency, but keep the import resilient for partial installs
     from pydantic import ValidationError
 except Exception:  # pragma: no cover
     ValidationError = ()  # type: ignore[assignment,misc]

@@ -1,8 +1,0 @@
-{
-  "name": "portfolio_total_pnl",
-  "prompt": "What is my total unrealized profit/loss across all open positions? Give the dollar figure.",
-  "expected_tools": ["get_portfolio"],
-  "answer_check": {"contains": "700"},
-  "script": [{"tool": "get_portfolio", "args": {}}],
-  "script_check": {"path": "summary.total_unrealized_pnl", "equals": 700.0}
-}

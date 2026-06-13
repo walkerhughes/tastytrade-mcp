@@ -1,8 +1,0 @@
-{
-  "name": "max_drawdown",
-  "prompt": "What was my portfolio's maximum drawdown over the recent history, as a percentage?",
-  "expected_tools": ["get_portfolio_history"],
-  "answer_check": {"contains": "11"},
-  "script": [{"tool": "get_portfolio_history", "args": {}}],
-  "script_check": {"path": "summary.max_drawdown_pct", "approx": 11.32, "tol": 0.02}
-}

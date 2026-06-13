@@ -1,4 +1,4 @@
-"""Shared fixtures for v2 tool unit tests."""
+"""Shared fixtures for the tool unit tests."""
 
 from typing import Any, Callable
 

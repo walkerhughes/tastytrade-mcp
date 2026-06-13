@@ -7,8 +7,8 @@ An MCP server that connects [Claude Code](https://docs.anthropic.com/en/docs/cla
 12 tools, each built around a question a trader actually asks rather than a single REST
 endpoint. Responses are trimmed and carry a computed summary, malformed arguments are
 corrected where it's safe to, and errors come back with a suggestion instead of a stack
-trace. [`docs/design/2026-06-mcp-v2.md`](docs/design/2026-06-mcp-v2.md) explains the
-reasoning, which borrows heavily from the Honeycomb MCP.
+trace. [`docs/design/2026-06-server-redesign.md`](docs/design/2026-06-server-redesign.md)
+explains the reasoning, which borrows heavily from the Honeycomb MCP.
 
 | Area | Tools |
 |---|---|
@@ -98,14 +98,14 @@ make coverage          # tests with coverage report
 ```
 ├── src/
 │   ├── client.py      # Tastytrade API client (OAuth2 auth, retry, logging)
-│   ├── server.py      # FastMCP server: registers the v2 tools
+│   ├── server.py      # FastMCP server: registers the tools
 │   ├── config.py      # Env-driven settings (trading gate, cache TTLs)
 │   ├── infra/         # errors, cache, correction, pagination, logging
 │   ├── schemas/       # Pydantic argument schemas (validation + auto-correction)
 │   ├── shaping/       # Response shaping + summary builders
 │   └── tools/         # One module per tool group
 ├── tests/             # Unit and integration tests, plus the mock API fixtures
-├── evaluation/        # LLM eval harness and the Harbor benchmark
+├── evals/             # Agent-loop eval tasks and the Harbor benchmark
 ├── docs/design/       # Technical design doc
 ├── .mcp.json          # MCP server config for Claude Code
 ├── .env.example       # Credential template
