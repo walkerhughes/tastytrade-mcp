@@ -1,5 +1,5 @@
 [task]
-name = "iv-rank-screen"
+name = "tastytrade-mcp/iv-rank-screen"
 description = "Find the current implied-volatility rank for AAPL."
 
 [metadata]

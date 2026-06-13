@@ -1,5 +1,5 @@
 [task]
-name = "position-count"
+name = "tastytrade-mcp/position-count"
 description = "Find how many open positions I currently hold."
 
 [metadata]

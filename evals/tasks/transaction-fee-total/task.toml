@@ -1,5 +1,5 @@
 [task]
-name = "transaction-fee-total"
+name = "tastytrade-mcp/transaction-fee-total"
 description = "Find the total fees across all of my transactions, in dollars."
 
 [metadata]

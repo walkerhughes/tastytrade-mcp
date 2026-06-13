@@ -1,5 +1,5 @@
 [task]
-name = "transaction-net-cash"
+name = "tastytrade-mcp/transaction-net-cash"
 description = "Find the net cash effect across all of my transactions, in dollars."
 
 [metadata]

@@ -1,5 +1,5 @@
 [task]
-name = "option-chain-atm"
+name = "tastytrade-mcp/option-chain-atm"
 description = "For SPY's 2026-04-17 expiration, find the at-the-money strike price."
 
 [metadata]

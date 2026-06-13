@@ -1,5 +1,5 @@
 [task]
-name = "net-liq-value"
+name = "tastytrade-mcp/net-liq-value"
 description = "Find my account's current net liquidating value, in dollars."
 
 [metadata]

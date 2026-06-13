@@ -1,5 +1,5 @@
 [task]
-name = "net-liq-drawdown"
+name = "tastytrade-mcp/net-liq-drawdown"
 description = "Find my portfolio's largest drawdown over the available net-liq history, as a percent."
 
 [metadata]

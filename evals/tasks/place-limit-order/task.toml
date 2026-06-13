@@ -1,5 +1,5 @@
 [task]
-name = "place-limit-order"
+name = "tastytrade-mcp/place-limit-order"
 description = "Place a market order to buy 5 shares of AAPL, with confirmation."
 
 [metadata]
