@@ -39,12 +39,16 @@ mock-api:
 	uv run uvicorn tests.fixtures.mock_api.app:app --host 0.0.0.0 --port 8080
 
 # Benchmark targets (need Docker running and ANTHROPIC_API_KEY set). These cd into evals/
-# so Harbor resolves the task path correctly regardless of where you invoke make.
+# so Harbor resolves the task path correctly regardless of where you invoke make, and they
+# call Harbor through uv so it does not need to be on PATH. Override with HARBOR=harbor to use
+# a harbor that is already on your PATH.
+HARBOR ?= uv tool run --from harbor harbor
+
 benchmark-build:
 	docker build -t tastytrade-bench evals/environment
 
 benchmark:
-	cd evals && harbor run -c job.yaml
+	cd evals && $(HARBOR) run -c job.yaml
 
 benchmark-view:
-	cd evals && harbor view jobs
+	cd evals && $(HARBOR) view jobs

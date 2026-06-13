@@ -58,13 +58,14 @@ make benchmark          # cd evals && harbor run -c job.yaml
 make benchmark-view     # cd evals && harbor view jobs
 ```
 
-Or run Harbor directly, from inside `evals/`:
+Or run Harbor directly, from inside `evals/`. Call it through `uv` so it doesn't need to be on
+your PATH:
 
 ```bash
 cd evals
 docker build -t tastytrade-bench environment
-harbor run -c job.yaml
-harbor view jobs
+uv tool run --from harbor harbor run -c job.yaml
+uv tool run --from harbor harbor view jobs
 ```
 
 The tasks reference the image by name (`docker_image = "tastytrade-bench"`), so build it
