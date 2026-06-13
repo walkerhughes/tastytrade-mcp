@@ -47,13 +47,19 @@ python evals/generate_tasks.py
 
 ## Run it
 
+Run these from inside the `evals/` directory. Harbor resolves the dataset path relative to
+the working directory in some versions and relative to the config file in others, and running
+from `evals/` makes the two coincide.
+
 ```bash
+cd evals
+
 # 1. Build the agent image. It clones both servers and the mock API.
-docker build -t tastytrade-bench evals/environment
+docker build -t tastytrade-bench environment
 
 # 2. Run both servers over every task, three trials each.
 export ANTHROPIC_API_KEY=...
-harbor run -c evals/job.yaml
+harbor run -c job.yaml
 
 # 3. Compare the two side by side.
 harbor view jobs
