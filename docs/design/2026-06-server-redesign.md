@@ -179,7 +179,7 @@ Per-response size was close on these small fixtures, with the new server slightl
 it adds the computed summaries and the inline quotes. Its trimming only pulls ahead on real
 Tastytrade payloads, which carry dozens of fields per object that the original server passes
 through untouched. The real comparison, covering agent-loop tokens, tool-call counts, latency,
-and success rate, is the Harbor benchmark in `evals/` (`harbor run -c evals/job.yaml`).
+and success rate, is the Harbor benchmark in `evals/` (run `harbor run -c job.yaml` from there).
 
 ## 12. Decisions and deferred work
 
