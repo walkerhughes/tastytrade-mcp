@@ -5,7 +5,7 @@ shaping code the server uses. Nothing is typed in by hand, so a task answer can 
 away from the data the agent actually sees. Change a fixture in
 `tests/fixtures/mock_api/data.py` and rerun this script to refresh the tasks.
 
-Run: python evaluation/harbor/generate_tasks.py
+Run: python evals/generate_tasks.py
 """
 
 import json
@@ -13,7 +13,7 @@ import os
 import stat
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from src.shaping.chain import collect_symbols, select_strikes, shape_chain  # noqa: E402

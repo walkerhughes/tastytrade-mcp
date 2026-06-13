@@ -1,8 +1,0 @@
-{
-  "name": "spy_atm_strike",
-  "prompt": "For the SPY 2026-04-17 options expiration, what is the at-the-money strike?",
-  "expected_tools": ["get_option_chain"],
-  "answer_check": {"contains": "200"},
-  "script": [{"tool": "get_option_chain", "args": {"symbol": "SPY", "expiration": "2026-04-17", "strikes_near": 0}}],
-  "script_check": {"path": "summary.atm_strike", "equals": 200.0}
-}

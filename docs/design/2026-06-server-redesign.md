@@ -1,10 +1,10 @@
-# Tastytrade MCP v2 technical design
+# Tastytrade MCP server redesign
 
 Status: merged into `mcp-server-refactor`. Date: 2026-06.
 
 ## 1. Background
 
-The v1 server is a thin wrapper. It has 23 tools in a single `src/server.py`, each one mapped
+The original server is a thin wrapper. It has 23 tools in a single `src/server.py`, each one mapped
 almost directly onto a Tastytrade REST endpoint, and each one hands the raw JSON back to the
 model. It works, but it runs into the same problems the Honeycomb team wrote up in
 [*"MCP, Easy as 1-2-3?"*](https://www.honeycomb.io/blog/mcp-easy-as-1-2-3):
@@ -32,7 +32,7 @@ Goals:
 - Make tools forgiving of model mistakes and helpful when they fail.
 - Add a per-resource cache and serve paging, search, and sort from it.
 - Make order placement safe on purpose, behind an env flag and a confirm flag.
-- Ship an eval harness and a Harbor benchmark that compares v1 against v2.
+- Ship an eval harness and a Harbor benchmark that compares the original server against the redesign.
 
 Non-goals:
 
@@ -40,16 +40,16 @@ Non-goals:
 - Changing auth or transport. It stays FastMCP, stdio, httpx, and the OAuth refresh flow.
 - Benchmarking against real money. The benchmark runs against recorded mock fixtures.
 
-## 3. Where v1 stands
+## 3. The starting point
 
 23 tools across accounts and portfolio, orders, market data and instruments, and watchlists.
 Raw passthrough through `_fmt` and `_items`. No resources or prompts, no logging, no handling
 of rate limits, no validation, and no cache beyond the account list. One global client. 45
 unit tests against an 80 percent coverage gate.
 
-## 4. Tool surface, v1 to v2
+## 4. Tool surface, before and after
 
-| v2 tool | Replaces (v1) | Notes |
+| New tool | Replaces | Notes |
 |---|---|---|
 | `list_accounts()` | get_accounts, get_trading_status | accounts plus options level and restrictions |
 | `get_portfolio(account_number="", include_closed=False)` | get_balances, get_positions | balances, positions, and a P/L `summary` |
@@ -129,28 +129,29 @@ nulls and internal fields are dropped, and kebab-case keys become snake_case.
 
 ## 8. Evals and the benchmark
 
-- The mock Tastytrade API in `tests/fixtures/mock_api` is a small ASGI app that replays
-  scrubbed responses, fakes `/oauth/token`, and records submitted orders so a verifier can
-  check them. The server reaches it through `API_BASE_URL`. The integration tests, the eval
-  harness, and the benchmark all use it.
+The server is evaluated at the agent-loop level, where it actually runs. There are two layers.
+
 - The fast checks are deterministic unit tests (`tests/unit/test_misuse_evals.py`). They feed
   realistic model mistakes through correction and validation and confirm the corrections and
   the suggestion-bearing errors. They run in CI.
-- The LLM eval harness (`evaluation/run.py` with cases in `evaluation/cases/`) has Claude drive
-  the tools through the Anthropic API and checks the answer, tracking tool calls, tokens, and
-  latency. `--dry-run` runs the oracle scripts instead, with no API key, so it can run in CI.
-- The Harbor benchmark (`evaluation/harbor/`) has 12 tasks and one `job.yaml` with two agents,
-  Claude Code on v1 and Claude Code on v2, over the same tasks. Harbor records the reward, phase
-  timings, and token and cost totals, and `harbor view jobs` shows the two side by side.
+- The Harbor benchmark (`evals/`) has 12 tasks and one `job.yaml` with two agents, Claude Code
+  on the baseline server and Claude Code on the candidate server, over the same tasks. Harbor
+  records the reward, phase timings, and token and cost totals, and `harbor view jobs` shows the
+  two side by side. `evals/validate_local.sh` checks each task's verifier against its oracle
+  without Harbor or an API key, so it runs in CI.
 
-To make v1 launchable in the same job, we added a `[project.scripts]` entry
+Both rely on the mock Tastytrade API in `tests/fixtures/mock_api`, a small ASGI app that
+replays scrubbed responses, fakes `/oauth/token`, and records submitted orders so a verifier
+can check them. The server reaches it through `API_BASE_URL`.
+
+To make the baseline launchable in the same job, we added a `[project.scripts]` entry
 (`tastytrade-mcp = "src.server:main"`). The benchmark image checks out both branches and runs
 each server with its own wrapper script.
 
 ## 9. Migration
 
-Tool names change outright, with no aliases. MCP clients rediscover the tools each session. v1
-stays runnable from `main`.
+Tool names change outright, with no aliases. MCP clients rediscover the tools each session. The
+original server stays runnable from `main`.
 
 ## 10. Rollout
 
@@ -158,8 +159,7 @@ stays runnable from `main`.
   pydantic dependency, and this design doc.
 - Phase 1, consolidation: the shaping helpers, the 12 tools, the split of `server.py` into the
   `tools` package, and rewritten tests.
-- Phase 2, evals: the mock API, integration tests, the deterministic misuse checks, and the LLM
-  eval runner.
+- Phase 2, evals: the mock API, integration tests, and the deterministic misuse checks.
 - Phase 3, benchmark: the environment, the tasks, `job.yaml`, and results.
 
 Each phase landed as a PR into `mcp-server-refactor`.
@@ -169,17 +169,17 @@ Each phase landed as a PR into `mcp-server-refactor`.
 A quick local comparison, with both servers pointed at the mock API and asked for the same
 results, shows the real win is fewer tool calls and answers that are ready to use:
 
-| Task (same end result) | v1 calls | v2 calls |
+| Task (same end result) | Before | After |
 |---|---|---|
 | Total unrealized P/L | 2 (`get_balances` and `get_positions`, agent does the math) | 1 (`get_portfolio`, P/L already in the summary) |
 | SPY 2026-04-17 chain with ATM and per-strike IV and volume | 3 (`get_option_expirations`, `get_option_chain`, `get_quote`, agent finds ATM) | 1 (`get_option_chain`, enriched, with a summary) |
 | Market snapshot (quote and IV metrics) | 2 (`get_quote` and `get_market_metrics`) | 1 (`get_market_data`) |
 
-Per-response size was close on these small fixtures, with v2 slightly larger because it adds the
-computed summaries and the inline quotes. v2's trimming only pulls ahead on real Tastytrade
-payloads, which carry dozens of fields per object that v1 passes through untouched. The real
-comparison, covering agent-loop tokens, tool-call counts, latency, and success rate, is the
-Harbor benchmark in `evaluation/harbor/` (`harbor run -c evaluation/harbor/job.yaml`).
+Per-response size was close on these small fixtures, with the new server slightly larger because
+it adds the computed summaries and the inline quotes. Its trimming only pulls ahead on real
+Tastytrade payloads, which carry dozens of fields per object that the original server passes
+through untouched. The real comparison, covering agent-loop tokens, tool-call counts, latency,
+and success rate, is the Harbor benchmark in `evals/` (`harbor run -c evals/job.yaml`).
 
 ## 12. Decisions and deferred work
 

@@ -1,4 +1,4 @@
-"""Unit tests for v2 consolidated tools (mocked client)."""
+"""Unit tests for the consolidated tools (mocked client)."""
 
 import json
 

@@ -1,7 +1,7 @@
-"""Tastytrade MCP server (v2).
+"""Tastytrade MCP server.
 
-Curated, task-oriented tools for an LLM rather than 1:1 REST wrappers. See
-docs/design/2026-06-mcp-v2.md for the design rationale.
+Task-oriented tools built for a model rather than one wrapper per REST endpoint. See
+docs/design/2026-06-server-redesign.md for the reasoning.
 
 Tool surface:
   Accounts/portfolio: list_accounts, get_portfolio, get_portfolio_history
@@ -27,7 +27,7 @@ INSTRUCTIONS = (
 
 
 def build_server() -> FastMCP:
-    """Construct and configure the FastMCP server with all v2 tools."""
+    """Construct and configure the FastMCP server with all tools."""
     configure_logging(get_settings().log_level)
     mcp = FastMCP("tastytrade", instructions=INSTRUCTIONS)
     register_all(mcp)

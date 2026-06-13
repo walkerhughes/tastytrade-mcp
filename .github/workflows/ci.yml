@@ -28,5 +28,5 @@ jobs:
       - name: Coverage (unit + integration)
         run: make coverage
 
-      - name: Tier-1 / oracle evals
-        run: make eval-dry
+      - name: Validate eval task verifiers
+        run: make validate-tasks

@@ -11,7 +11,7 @@ from .watchlists import register as register_watchlists
 
 
 def register_all(mcp: FastMCP) -> None:
-    """Register every v2 tool group on the given FastMCP server."""
+    """Register every tool group on the given FastMCP server."""
     register_accounts(mcp)
     register_market_data(mcp)
     register_options(mcp)
