@@ -1,0 +1,8 @@
+{
+  "name": "aapl_iv_rank",
+  "prompt": "What is the current IV rank for AAPL?",
+  "expected_tools": ["get_market_data"],
+  "answer_check": {"contains": "42"},
+  "script": [{"tool": "get_market_data", "args": {"symbols": ["AAPL"], "include": ["metrics"]}}],
+  "script_check": {"path": "0.metrics.iv_rank", "equals": 42.5}
+}

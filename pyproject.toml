@@ -23,6 +23,8 @@ dev = [
     "pytest-xdist>=3.0",
     "pytest-asyncio>=0.23",
     "python-dotenv>=1.0",
+    "starlette>=0.37",
+    "uvicorn>=0.30",
 ]
 
 [tool.pytest.ini_options]

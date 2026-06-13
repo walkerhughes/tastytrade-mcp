@@ -1,0 +1,8 @@
+{
+  "name": "transaction_total_fees",
+  "prompt": "What were my total fees across all transactions in the account?",
+  "expected_tools": ["query_transactions"],
+  "answer_check": {"contains": "0.32"},
+  "script": [{"tool": "query_transactions", "args": {}}],
+  "script_check": {"path": "summary.total_fees", "approx": 0.32, "tol": 0.001}
+}

@@ -2,9 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, mcp-server-refactor]
   pull_request:
-    branches: [main]
 
 jobs:
   check:
@@ -26,5 +25,8 @@ jobs:
       - name: Lint & typecheck
         run: make check
 
-      - name: Coverage
+      - name: Coverage (unit + integration)
         run: make coverage
+
+      - name: Tier-1 / oracle evals
+        run: make eval-dry
