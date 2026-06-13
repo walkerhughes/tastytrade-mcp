@@ -15,7 +15,7 @@ from tests.unit.conftest import FakeClient
 pytestmark = [pytest.mark.unit, pytest.mark.asyncio]
 
 
-# ── accounts / portfolio ─────────────────────────────────────────
+# accounts / portfolio
 
 
 async def test_list_accounts_merges_trading_status(install_client):
@@ -74,7 +74,7 @@ async def test_get_portfolio_history_summary(install_client):
     assert out["summary"]["max_drawdown_pct"] == 25.0  # 120 -> 90
 
 
-# ── market data ──────────────────────────────────────────────────
+# market data
 
 
 async def test_search_symbols_shaped(install_client):
@@ -108,7 +108,7 @@ async def test_get_market_data_rejects_bad_facet(install_client):
     assert "error" in out
 
 
-# ── options ──────────────────────────────────────────────────────
+# options
 
 NESTED = {
     "data": {
@@ -175,7 +175,7 @@ async def test_option_chain_unknown_expiration(install_client):
     assert "error" in out
 
 
-# ── transactions ─────────────────────────────────────────────────
+# transactions
 
 
 async def test_query_transactions_summary_and_pagination(install_client):
@@ -205,7 +205,7 @@ async def test_query_transactions_rejects_bad_date(install_client):
     assert "error" in out
 
 
-# ── orders ───────────────────────────────────────────────────────
+# orders
 
 
 async def test_list_orders_live_shaped(install_client):
@@ -284,7 +284,7 @@ async def test_cancel_order(install_client):
     assert any(c[0] == "DELETE" for c in client.calls)
 
 
-# ── watchlists ───────────────────────────────────────────────────
+# watchlists
 
 
 async def test_get_watchlists_names_only(install_client):

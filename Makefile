@@ -29,14 +29,14 @@ coverage:
 install-hooks:
 	git config core.hooksPath .githooks
 
-# Tier-2 evals. eval-dry runs the deterministic oracle scripts (no API key, CI-safe).
-# eval drives Claude via the Anthropic API (requires ANTHROPIC_API_KEY + `uv pip install anthropic`).
+# eval-dry runs the deterministic oracle scripts and needs no API key, so it runs in CI.
+# eval drives Claude through the Anthropic API (needs ANTHROPIC_API_KEY and `uv pip install anthropic`).
 eval-dry:
-	uv run python -m evals.run --dry-run
+	uv run python -m evaluation.run --dry-run
 
 eval:
-	uv run python -m evals.run
+	uv run python -m evaluation.run
 
-# Run the mock Tastytrade API standalone (used as a Harbor sidecar).
+# Run the mock Tastytrade API on its own, the way the Harbor benchmark runs it.
 mock-api:
 	uv run uvicorn tests.fixtures.mock_api.app:app --host 0.0.0.0 --port 8080

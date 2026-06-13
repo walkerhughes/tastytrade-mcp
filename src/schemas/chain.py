@@ -1,7 +1,7 @@
-"""Option-chain query schema — the closest thing Tastytrade has to a ``run_query`` DSL.
+"""Schema for the option-chain query, the nearest thing Tastytrade has to a query language.
 
-Filtering a chain (by expiration, days-to-expiration, strikes-near-the-money, and type)
-is where the model most often doom-loops, so it gets the full guard-rail treatment.
+Filtering a chain by expiration, days to expiration, strikes near the money, and type is
+where the model most often gets stuck, so this schema does the most correction and checking.
 """
 
 from typing import Any, Literal

@@ -4,10 +4,11 @@ An MCP server that connects [Claude Code](https://docs.anthropic.com/en/docs/cla
 
 ## Features
 
-12 curated, task-oriented tools (not 1:1 REST wrappers) designed for an LLM agent —
-compact responses with computed summaries, auto-correction of malformed arguments, and
-guided error messages. See [`docs/design/2026-06-mcp-v2.md`](docs/design/2026-06-mcp-v2.md)
-for the design rationale (modeled on the Honeycomb MCP).
+12 tools, each built around a question a trader actually asks rather than a single REST
+endpoint. Responses are trimmed and carry a computed summary, malformed arguments are
+corrected where it's safe to, and errors come back with a suggestion instead of a stack
+trace. [`docs/design/2026-06-mcp-v2.md`](docs/design/2026-06-mcp-v2.md) explains the
+reasoning, which borrows heavily from the Honeycomb MCP.
 
 | Area | Tools |
 |---|---|
@@ -17,11 +18,11 @@ for the design rationale (modeled on the Honeycomb MCP).
 | Trading | `preview_order`, `place_order`, `cancel_order` |
 | Watchlists | `get_watchlists` |
 
-- **`get_portfolio`** returns balances + positions + a P/L rollup in one call.
-- **`get_market_data`** is one flexible snapshot: quote, IV metrics, dividends, earnings, instrument.
+- **`get_portfolio`** returns balances, positions, and a P/L rollup in one call.
+- **`get_market_data`** is one snapshot covering quote, IV metrics, dividends, earnings, and instrument detail.
 - **`get_option_chain`** lists expirations, then returns quote-enriched strikes plus a summary
-  (ATM strike, IV range, top strikes by volume / open interest).
-- **`query_transactions`** fetches once and serves paging/search/sort locally, with a cash/fee summary.
+  (ATM strike, IV range, busiest strikes by volume and open interest).
+- **`query_transactions`** fetches once and then pages, searches, and sorts locally, with a cash and fee summary.
 
 Authentication uses the OAuth2 refresh-token flow with automatic token refresh.
 
@@ -66,13 +67,13 @@ Once running, you can ask Claude things like:
 
 > "What are my current positions and P&L?"
 
-Claude will call `list_accounts` to find your account number, then `get_portfolio` to fetch balances, positions, and P/L in one call — all through the MCP server:
+Claude calls `list_accounts` to find your account number, then `get_portfolio` to fetch balances, positions, and P/L in a single call:
 
 ```
 User: What are my current positions?
 
-Claude: [calls list_accounts]  →  account XXXXXXXX
-        [calls get_portfolio]  →  balances + positions + P/L summary
+Claude: [calls list_accounts]  returns account XXXXXXXX
+        [calls get_portfolio]  returns balances, positions, and a P/L summary
 
 You have 3 open positions:
   AAPL  100 shares   +$320.50 (+2.1%)
@@ -103,7 +104,8 @@ make coverage          # tests with coverage report
 │   ├── schemas/       # Pydantic argument schemas (validation + auto-correction)
 │   ├── shaping/       # Response shaping + summary builders
 │   └── tools/         # One module per tool group
-├── tests/unit/        # Unit tests (90%+ coverage)
+├── tests/             # Unit and integration tests, plus the mock API fixtures
+├── evaluation/        # LLM eval harness and the Harbor benchmark
 ├── docs/design/       # Technical design doc
 ├── .mcp.json          # MCP server config for Claude Code
 ├── .env.example       # Credential template

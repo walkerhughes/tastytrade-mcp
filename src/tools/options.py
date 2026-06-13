@@ -1,4 +1,4 @@
-"""Option chain tool — discovery (expirations) and filtered, quote-enriched strikes."""
+"""Option chain tool: list expirations, or return filtered strikes with quotes."""
 
 from mcp.server.fastmcp import FastMCP
 

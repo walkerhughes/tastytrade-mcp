@@ -92,7 +92,7 @@ async def dry_run(request: Request) -> JSONResponse:
                     "change-in-buying-power-effect": "Debit",
                     "new-buying-power": str(round(40000.0 - est, 2)),
                 },
-                "fee-calculation": {"total-fees": "1.16"},
+                "fee-calculation": {"total-fees": data.DRY_RUN_TOTAL_FEES},
                 "warnings": [],
             }
         }

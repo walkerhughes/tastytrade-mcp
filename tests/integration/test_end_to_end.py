@@ -1,7 +1,7 @@
 """End-to-end tool tests against the in-process mock Tastytrade API.
 
-These exercise the real client (auth, retry, envelope handling) plus tool shaping, and
-assert the exact values the fixtures encode — the same ground truth the Harbor benchmark
+These run the real client (auth, retry, envelope handling) together with the tool shaping
+and check the exact values the fixtures encode, the same ground truth the Harbor benchmark
 verifiers use.
 """
 

@@ -10,7 +10,7 @@ from src.infra.correction import coerce_int, match_enum, normalize_key, normaliz
 from src.infra.errors import error_response, guarded_tool
 from src.infra.pagination import PaginationParams
 
-# ── TTLCache ─────────────────────────────────────────────────────
+# TTLCache
 
 
 @pytest.mark.unit
@@ -42,7 +42,7 @@ def test_ttl_cache_lru_eviction():
     assert cache.get("c") == 3
 
 
-# ── access_collection ────────────────────────────────────────────
+# access_collection
 
 ROWS = [
     {"symbol": "AAPL", "qty": 100, "value": 30},
@@ -73,7 +73,7 @@ def test_access_collection_search():
     assert out["items"][0]["symbol"] == "SPY"
 
 
-# ── correction ───────────────────────────────────────────────────
+# correction
 
 
 @pytest.mark.unit
@@ -112,7 +112,7 @@ def test_unwrap_single_key_wrapper():
     assert unwrap({"a": 1, "b": 2}, "order") == {"a": 1, "b": 2}
 
 
-# ── errors ───────────────────────────────────────────────────────
+# errors
 
 
 @pytest.mark.unit
@@ -162,7 +162,7 @@ async def test_guarded_tool_passes_through_success():
     assert await tool() == "ok"
 
 
-# ── pagination schema ────────────────────────────────────────────
+# pagination schema
 
 
 @pytest.mark.unit

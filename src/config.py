@@ -1,8 +1,8 @@
 """Runtime configuration for the Tastytrade MCP server.
 
-All settings are read from the environment so behavior can be tuned per-deployment
-without code changes. Trading is OFF by default — placing live orders requires an
-explicit operator opt-in (``TT_ENABLE_TRADING``) in addition to a per-call ``confirm``.
+All settings come from the environment, so a deployment can be tuned without code
+changes. Trading is off by default: placing a live order needs both an explicit opt-in
+(``TT_ENABLE_TRADING``) and a per-call ``confirm``.
 """
 
 import os
