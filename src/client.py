@@ -22,6 +22,7 @@ class TastyTradeClient:
         client_id: str | None = None,
         client_secret: str | None = None,
         refresh_token: str | None = None,
+        transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         base = base_url or os.environ.get("API_BASE_URL", "api.tastyworks.com")
         if not base.startswith("http"):
@@ -35,6 +36,9 @@ class TastyTradeClient:
         self.customer_id: str | None = None
         self._accounts: list[dict] | None = None
         self._http: httpx.AsyncClient | None = None
+        # An injected transport (e.g. httpx.ASGITransport) lets tests drive the mock
+        # API in-process without a live server.
+        self._transport = transport
 
     async def _http_client(self) -> httpx.AsyncClient:
         if self._http is None or self._http.is_closed:
@@ -46,6 +50,7 @@ class TastyTradeClient:
                     "User-Agent": "tastytrade-mcp/1.0",
                 },
                 timeout=30.0,
+                transport=self._transport,
             )
         return self._http
 

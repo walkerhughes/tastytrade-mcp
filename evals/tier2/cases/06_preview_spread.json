@@ -1,0 +1,23 @@
+{
+  "name": "preview_vertical_spread",
+  "prompt": "Preview a 1-contract SPY 2026-04-17 200/205 call debit spread at a 1.50 limit and tell me the total fees.",
+  "expected_tools": ["preview_order"],
+  "answer_check": {"contains": "1.16"},
+  "script": [
+    {
+      "tool": "preview_order",
+      "args": {
+        "order": {
+          "order_type": "Limit",
+          "price": 1.50,
+          "price_effect": "Debit",
+          "legs": [
+            {"action": "Buy to Open", "symbol": "SPY   260417C00200000", "quantity": 1},
+            {"action": "Sell to Open", "symbol": "SPY   260417C00205000", "quantity": 1}
+          ]
+        }
+      }
+    }
+  ],
+  "script_check": {"path": "total_fees", "equals": 1.16}
+}
