@@ -133,7 +133,7 @@ NUMERIC_TASKS = [
 
 TASK_TOML = """\
 [task]
-name = "{name}"
+name = "tastytrade-mcp/{name}"
 description = "{desc}"
 
 [metadata]

@@ -1,5 +1,5 @@
 [task]
-name = "portfolio-pnl"
+name = "tastytrade-mcp/portfolio-pnl"
 description = "Find my total unrealized profit/loss across all open positions, in dollars."
 
 [metadata]

@@ -1,5 +1,5 @@
 [task]
-name = "preview-vertical-spread"
+name = "tastytrade-mcp/preview-vertical-spread"
 description = "Preview a 1-contract SPY 2026-04-17 200/205 call debit spread at a 1.50 limit and report the total fees, in dollars."
 
 [metadata]

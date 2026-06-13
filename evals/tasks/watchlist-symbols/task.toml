@@ -1,5 +1,5 @@
 [task]
-name = "watchlist-symbols"
+name = "tastytrade-mcp/watchlist-symbols"
 description = "List the ticker symbols in my watchlist named 'My Tech'."
 
 [metadata]
