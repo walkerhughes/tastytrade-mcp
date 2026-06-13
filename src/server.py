@@ -1,7 +1,7 @@
 """Tastytrade MCP server.
 
 Task-oriented tools built for a model rather than one wrapper per REST endpoint. See
-docs/design/2026-06-server-redesign.md for the reasoning.
+docs/design.md for the reasoning.
 
 Tool surface:
   Accounts/portfolio: list_accounts, get_portfolio, get_portfolio_history

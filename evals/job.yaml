@@ -22,17 +22,17 @@ environment:
 
 agents:
   - name: claude-code
-    model_name: anthropic/claude-sonnet-4-6
+    model_name: anthropic/claude-haiku-4-5-20251001
     mcp_servers:
       - name: tastytrade
         transport: stdio
-        command: mcp-baseline # runs the main-branch server
+        command: mcp-baseline # the plain endpoint-wrapper baseline
   - name: claude-code
-    model_name: anthropic/claude-sonnet-4-6
+    model_name: anthropic/claude-haiku-4-5-20251001
     mcp_servers:
       - name: tastytrade
         transport: stdio
-        command: mcp-candidate # runs the refactor-branch server
+        command: mcp-candidate # this server
 
 datasets:
   - path: ./tasks

@@ -24,19 +24,19 @@
 
 Follow **Test-Driven Development (TDD)**: Red -> Green -> Refactor.
 
-- `make test` — run all tests
-- `make test-unit` — run tests marked `@pytest.mark.unit`
-- `make test-integration` — run tests marked `@pytest.mark.integration`
-- `make coverage` — run tests with coverage report (80% threshold)
+- `make test`: run all tests
+- `make test-unit`: run tests marked `@pytest.mark.unit`
+- `make test-integration`: run tests marked `@pytest.mark.integration`
+- `make coverage`: run tests with coverage report (80% threshold)
 - Place shared fixtures in `tests/conftest.py`
 - Unit tests: fast, no external dependencies
 - Integration tests: may use databases, APIs, or services
 
 ## Linting & Formatting
 
-- `make lint` — check with ruff
-- `make lint-fix` — auto-fix with ruff
-- `make format` — format with ruff
+- `make lint`: check with ruff
+- `make lint-fix`: auto-fix with ruff
+- `make format`: format with ruff
 
 A PostToolUse hook automatically runs `make lint-fix format` after any `.py` file edit.
 
@@ -66,7 +66,7 @@ A PostToolUse hook automatically runs `make lint-fix format` after any `.py` fil
 
 1. **Plan first** for non-trivial tasks (3+ steps or architectural decisions).
 2. **Use subagents** to keep the main context window clean.
-3. **Verify before done** — run tests, check logs, demonstrate correctness.
-4. **No laziness** — find root causes, no temporary fixes.
-5. **Minimal impact** — only touch what's necessary.
-6. **Simplicity first** — make every change as simple as possible.
+3. **Verify before done**: run tests, check logs, demonstrate correctness.
+4. **No laziness**: find root causes, no temporary fixes.
+5. **Minimal impact**: only touch what's necessary.
+6. **Simplicity first**: make every change as simple as possible.

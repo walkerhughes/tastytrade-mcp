@@ -7,8 +7,7 @@ An MCP server that connects [Claude Code](https://docs.anthropic.com/en/docs/cla
 12 tools, each built around a question a trader actually asks rather than a single REST
 endpoint. Responses are trimmed and carry a computed summary, malformed arguments are
 corrected where it's safe to, and errors come back with a suggestion instead of a stack
-trace. [`docs/design/2026-06-server-redesign.md`](docs/design/2026-06-server-redesign.md)
-explains the reasoning, which borrows heavily from the Honeycomb MCP.
+trace.
 
 | Area | Tools |
 |---|---|
@@ -31,6 +30,23 @@ Authentication uses the OAuth2 refresh-token flow with automatic token refresh.
 `place_order` executes live trades and is gated twice: the server must be started with
 `TT_ENABLE_TRADING=true`, **and** each call must pass `confirm=true`. Otherwise the order is not
 sent and the previewed effect is returned. Always call `preview_order` first.
+
+## Architecture
+
+The design follows the Honeycomb MCP: a few curated tools, responses shaped for a model rather
+than a UI, and schemas that steer the model toward valid calls. See [`docs/design.md`](docs/design.md)
+for the full reasoning.
+
+- **Curated tools**, one module per group: [`src/tools/`](src/tools)
+- **Response shaping and summaries**, trimmed payloads with computed rollups: [`src/shaping/`](src/shaping)
+- **Typed argument schemas** that validate and [auto-correct](src/infra/correction.py) common mistakes: [`src/schemas/`](src/schemas)
+- **Guided errors** that return a suggestion instead of a stack trace: [`src/infra/errors.py`](src/infra/errors.py)
+- **Caching** with a per-resource TTL that also serves paging, search, and sort in memory: [`src/infra/cache.py`](src/infra/cache.py)
+- **Shared pagination** across the list tools: [`src/infra/pagination.py`](src/infra/pagination.py)
+- **Structured logging** to stderr, safe for a stdio server: [`src/infra/logging.py`](src/infra/logging.py)
+- **Trading safety gate**, an env flag plus a per-call confirm: [`src/config.py`](src/config.py)
+- **Deterministic mock API** for tests and evals: [`tests/fixtures/mock_api/`](tests/fixtures/mock_api)
+- **Agent-loop evals** through Harbor: [`evals/`](evals)
 
 ## Getting Started
 
@@ -106,7 +122,7 @@ make coverage          # tests with coverage report
 │   └── tools/         # One module per tool group
 ├── tests/             # Unit and integration tests, plus the mock API fixtures
 ├── evals/             # Agent-loop eval tasks and the Harbor benchmark
-├── docs/design/       # Technical design doc
+├── docs/design.md     # Technical design doc
 ├── .mcp.json          # MCP server config for Claude Code
 ├── .env.example       # Credential template
 └── pyproject.toml     # Dependencies and tool config
