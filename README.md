@@ -4,12 +4,32 @@ An MCP server that connects [Claude Code](https://docs.anthropic.com/en/docs/cla
 
 ## Features
 
-- **Account & Portfolio** — balances, positions, trading status, transaction history, net liq history
-- **Order Management** — preview (dry-run), place, cancel, and replace orders
-- **Market Data** — symbol search, equity info, option chains (with expiration/strike filtering), IV rank, liquidity metrics, dividends, earnings
-- **Watchlists** — personal and public TastyTrade watchlists
+12 curated, task-oriented tools (not 1:1 REST wrappers) designed for an LLM agent —
+compact responses with computed summaries, auto-correction of malformed arguments, and
+guided error messages. See [`docs/design/2026-06-mcp-v2.md`](docs/design/2026-06-mcp-v2.md)
+for the design rationale (modeled on the Honeycomb MCP).
 
-Authentication uses OAuth2 refresh-token flow with automatic token refresh.
+| Area | Tools |
+|---|---|
+| Accounts & portfolio | `list_accounts`, `get_portfolio`, `get_portfolio_history` |
+| Market data | `search_symbols`, `get_market_data`, `get_option_chain` |
+| Activity | `query_transactions`, `list_orders` |
+| Trading | `preview_order`, `place_order`, `cancel_order` |
+| Watchlists | `get_watchlists` |
+
+- **`get_portfolio`** returns balances + positions + a P/L rollup in one call.
+- **`get_market_data`** is one flexible snapshot: quote, IV metrics, dividends, earnings, instrument.
+- **`get_option_chain`** lists expirations, then returns quote-enriched strikes plus a summary
+  (ATM strike, IV range, top strikes by volume / open interest).
+- **`query_transactions`** fetches once and serves paging/search/sort locally, with a cash/fee summary.
+
+Authentication uses the OAuth2 refresh-token flow with automatic token refresh.
+
+### Order safety
+
+`place_order` executes live trades and is gated twice: the server must be started with
+`TT_ENABLE_TRADING=true`, **and** each call must pass `confirm=true`. Otherwise the order is not
+sent and the previewed effect is returned. Always call `preview_order` first.
 
 ## Getting Started
 
@@ -46,13 +66,13 @@ Once running, you can ask Claude things like:
 
 > "What are my current positions and P&L?"
 
-Claude will call `get_accounts` to find your account number, then `get_positions` to fetch your portfolio — all through the MCP server:
+Claude will call `list_accounts` to find your account number, then `get_portfolio` to fetch balances, positions, and P/L in one call — all through the MCP server:
 
 ```
 User: What are my current positions?
 
-Claude: [calls get_accounts]  →  account XXXXXXXX
-        [calls get_positions] →  returns portfolio data
+Claude: [calls list_accounts]  →  account XXXXXXXX
+        [calls get_portfolio]  →  balances + positions + P/L summary
 
 You have 3 open positions:
   AAPL  100 shares   +$320.50 (+2.1%)
@@ -76,9 +96,15 @@ make coverage          # tests with coverage report
 
 ```
 ├── src/
-│   ├── client.py      # TastyTrade API client (OAuth2 auth)
-│   └── server.py      # MCP server with 22 tools
-├── tests/unit/        # 44 unit tests (94% coverage)
+│   ├── client.py      # Tastytrade API client (OAuth2 auth, retry, logging)
+│   ├── server.py      # FastMCP server: registers the v2 tools
+│   ├── config.py      # Env-driven settings (trading gate, cache TTLs)
+│   ├── infra/         # errors, cache, correction, pagination, logging
+│   ├── schemas/       # Pydantic argument schemas (validation + auto-correction)
+│   ├── shaping/       # Response shaping + summary builders
+│   └── tools/         # One module per tool group
+├── tests/unit/        # Unit tests (90%+ coverage)
+├── docs/design/       # Technical design doc
 ├── .mcp.json          # MCP server config for Claude Code
 ├── .env.example       # Credential template
 └── pyproject.toml     # Dependencies and tool config
