@@ -1,9 +1,12 @@
 """TastyTrade API client with OAuth2 authentication."""
 
+import asyncio
 import os
 import time
 
 import httpx
+
+from .infra.logging import get_logger
 
 
 class TastyTradeClient:
@@ -19,6 +22,7 @@ class TastyTradeClient:
         client_id: str | None = None,
         client_secret: str | None = None,
         refresh_token: str | None = None,
+        transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         base = base_url or os.environ.get("API_BASE_URL", "api.tastyworks.com")
         if not base.startswith("http"):
@@ -32,6 +36,9 @@ class TastyTradeClient:
         self.customer_id: str | None = None
         self._accounts: list[dict] | None = None
         self._http: httpx.AsyncClient | None = None
+        # An injected transport (e.g. httpx.ASGITransport) lets tests drive the mock
+        # API in-process without a live server.
+        self._transport = transport
 
     async def _http_client(self) -> httpx.AsyncClient:
         if self._http is None or self._http.is_closed:
@@ -43,6 +50,7 @@ class TastyTradeClient:
                     "User-Agent": "tastytrade-mcp/1.0",
                 },
                 timeout=30.0,
+                transport=self._transport,
             )
         return self._http
 
@@ -91,13 +99,33 @@ class TastyTradeClient:
             await self.authenticate()
 
     async def request(self, method: str, path: str, **kwargs) -> dict:
-        """Make an authenticated API request with auto-retry on 401."""
+        """Make an authenticated API request.
+
+        Auto-refreshes the token on 401 and retries, and retries 429/5xx responses
+        with exponential backoff (up to 3 attempts) so transient rate limits don't
+        surface to the model as hard failures.
+        """
         await self._ensure_auth()
         http = await self._http_client()
-        resp = await http.request(method, path, **kwargs)
-        if resp.status_code == 401:
-            await self.authenticate()
+        log = get_logger()
+
+        backoffs = [0.5, 1.0, 2.0]
+        for attempt in range(len(backoffs) + 1):
+            start = time.monotonic()
             resp = await http.request(method, path, **kwargs)
+            if resp.status_code == 401:
+                await self.authenticate()
+                resp = await http.request(method, path, **kwargs)
+            dur_ms = round((time.monotonic() - start) * 1000, 1)
+            log.debug("api_request method=%s path=%s status=%s ms=%s", method, path, resp.status_code, dur_ms)
+
+            if resp.status_code in (429, 500, 502, 503, 504) and attempt < len(backoffs):
+                delay = backoffs[attempt]
+                log.warning("api_retry path=%s status=%s attempt=%s delay=%s", path, resp.status_code, attempt, delay)
+                await asyncio.sleep(delay)
+                continue
+            break
+
         resp.raise_for_status()
         if resp.status_code == 204:
             return {}

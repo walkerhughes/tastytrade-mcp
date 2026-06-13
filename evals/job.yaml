@@ -1,0 +1,38 @@
+# Run Claude Code against both the baseline (main) and candidate (refactor) servers over the
+# same tasks. The server to use lives on each agent config, so one job covers both. Harbor
+# records the reward, phase timings, and token and cost totals per trial. Compare with
+# `harbor view jobs`.
+#
+# Before running, from inside the evals/ directory (so the task path resolves the same way
+# across Harbor versions):
+#   docker build -t tastytrade-bench environment
+#   export ANTHROPIC_API_KEY=...
+#   harbor run -c job.yaml
+jobs_dir: jobs
+n_attempts: 3 # trials per task per agent
+
+orchestrator:
+  type: local
+  n_concurrent_trials: 4
+
+environment:
+  type: docker
+  env:
+    - "ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}"
+
+agents:
+  - name: claude-code
+    model_name: anthropic/claude-haiku-4-5-20251001
+    mcp_servers:
+      - name: tastytrade
+        transport: stdio
+        command: mcp-baseline # the plain endpoint-wrapper baseline
+  - name: claude-code
+    model_name: anthropic/claude-haiku-4-5-20251001
+    mcp_servers:
+      - name: tastytrade
+        transport: stdio
+        command: mcp-candidate # this server
+
+datasets:
+  - path: ./tasks

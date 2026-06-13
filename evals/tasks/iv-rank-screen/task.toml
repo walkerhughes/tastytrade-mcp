@@ -1,0 +1,16 @@
+[task]
+name = "tastytrade-mcp/iv-rank-screen"
+description = "Find the current implied-volatility rank for AAPL."
+
+[metadata]
+suite = "tastytrade-mcp"
+
+[environment]
+docker_image = "tastytrade-bench"
+network_mode = "public"
+
+[agent]
+timeout_sec = 300
+
+[verifier]
+timeout_sec = 60

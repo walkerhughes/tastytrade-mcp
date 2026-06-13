@@ -5,7 +5,7 @@ import pytest
 
 from src.client import TastyTradeClient
 
-# ── Fixtures ─────────────────────────────────────────────────────
+# Fixtures
 
 # Minimal JWT with sub claim "U000123" (header.payload.signature)
 # payload = base64url({"sub":"U000123","exp":9999999999})
@@ -76,7 +76,7 @@ def client_env(monkeypatch):
     monkeypatch.setenv("API_BASE_URL", "api.test.com")
 
 
-# ── Authentication ───────────────────────────────────────────────
+# Authentication
 
 
 @pytest.mark.unit
@@ -103,7 +103,7 @@ async def test_ensure_auth_calls_authenticate_once():
     await client._ensure_auth()
     assert client._access_token == _TEST_TOKEN
 
-    # Token not expired yet — should not re-authenticate
+    # Token not expired yet, so it should not re-authenticate
     old_expires = client._token_expires_at
     await client._ensure_auth()
     assert client._token_expires_at == old_expires
@@ -136,7 +136,7 @@ async def test_token_refresh_on_expiry():
     assert call_count["oauth"] == 2
 
 
-# ── Request handling ─────────────────────────────────────────────
+# Request handling
 
 
 @pytest.mark.unit
@@ -205,7 +205,7 @@ async def test_204_returns_empty_dict():
     assert result == {}
 
 
-# ── Account helpers ──────────────────────────────────────────────
+# Account helpers
 
 
 @pytest.mark.unit
@@ -252,7 +252,7 @@ async def test_get_default_account_number():
     assert acct == "5WT00001"
 
 
-# ── Constructor ──────────────────────────────────────────────────
+# Constructor
 
 
 @pytest.mark.unit

@@ -1,0 +1,16 @@
+[task]
+name = "tastytrade-mcp/preview-vertical-spread"
+description = "Preview a 1-contract SPY 2026-04-17 200/205 call debit spread at a 1.50 limit and report the total fees, in dollars."
+
+[metadata]
+suite = "tastytrade-mcp"
+
+[environment]
+docker_image = "tastytrade-bench"
+network_mode = "public"
+
+[agent]
+timeout_sec = 300
+
+[verifier]
+timeout_sec = 60
