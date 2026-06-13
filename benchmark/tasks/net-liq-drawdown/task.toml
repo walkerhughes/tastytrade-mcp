@@ -1,0 +1,16 @@
+[task]
+name = "net-liq-drawdown"
+description = "Find my portfolio's maximum drawdown over the available net-liq history, as a percent."
+
+[metadata]
+suite = "tastytrade-mcp"
+
+[environment]
+docker_image = "tastytrade-bench"
+network_mode = "public"
+
+[agent]
+timeout_sec = 300
+
+[verifier]
+timeout_sec = 60

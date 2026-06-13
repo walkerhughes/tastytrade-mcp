@@ -1,0 +1,37 @@
+# Harbor job: benchmark Claude Code against the v1 (main) vs v2 (refactor) MCP server over
+# identical tasks. Because mcp_servers lives on the agent config, a single job runs both
+# variants; Harbor records reward, phase timings, and token/cost per trial. Compare with
+# `harbor view jobs`.
+#
+# Prereqs:
+#   docker build -t tastytrade-bench benchmark/environment
+#   export ANTHROPIC_API_KEY=...
+#   harbor run -c benchmark/job.yaml
+jobs_dir: jobs
+n_attempts: 3 # trials per task per agent, for variance
+
+orchestrator:
+  type: local
+  n_concurrent_trials: 4
+
+environment:
+  type: docker # multi-version image is local-Docker friendly
+  env:
+    - "ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}"
+
+agents:
+  - name: claude-code
+    model_name: anthropic/claude-fable-5
+    mcp_servers:
+      - name: tastytrade
+        transport: stdio
+        command: mcp-v1 # /usr/local/bin/mcp-v1 -> main branch server
+  - name: claude-code
+    model_name: anthropic/claude-fable-5
+    mcp_servers:
+      - name: tastytrade
+        transport: stdio
+        command: mcp-v2 # /usr/local/bin/mcp-v2 -> refactor branch server
+
+datasets:
+  - path: ./tasks
