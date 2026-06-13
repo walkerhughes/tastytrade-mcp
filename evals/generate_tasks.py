@@ -133,7 +133,7 @@ NUMERIC_TASKS = [
 
 TASK_TOML = """\
 [task]
-name = "{name}"
+name = "tastytrade-mcp/{name}"
 description = "{desc}"
 
 [metadata]
@@ -149,6 +149,11 @@ timeout_sec = 300
 [verifier]
 timeout_sec = 60
 """
+
+# Harbor requires every task to have an environment/ directory to be discovered, even when a
+# pre-built docker_image is set. This one-line Dockerfile inherits the shared image so no
+# per-task build work happens; run `make benchmark-build` once to create tastytrade-bench.
+ENVIRONMENT_DOCKERFILE = "FROM tastytrade-bench\n"
 
 NUMERIC_INSTRUCTION = """\
 # Task: {title}
@@ -375,6 +380,10 @@ def generate() -> list[str]:
         executable=True,
     )
     names.append(name)
+
+    # Every task needs an environment/ directory or Harbor will not discover it.
+    for task in names:
+        _write(os.path.join(TASKS_DIR, task, "environment", "Dockerfile"), ENVIRONMENT_DOCKERFILE)
 
     return names
 

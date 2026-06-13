@@ -1,5 +1,5 @@
 [task]
-name = "dividend-lookup"
+name = "tastytrade-mcp/dividend-lookup"
 description = "Find AAPL's most recent dividend amount per share, in dollars."
 
 [metadata]

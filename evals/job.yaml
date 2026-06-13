@@ -3,10 +3,11 @@
 # records the reward, phase timings, and token and cost totals per trial. Compare with
 # `harbor view jobs`.
 #
-# Before running:
-#   docker build -t tastytrade-bench evals/environment
+# Before running, from inside the evals/ directory (so the task path resolves the same way
+# across Harbor versions):
+#   docker build -t tastytrade-bench environment
 #   export ANTHROPIC_API_KEY=...
-#   harbor run -c evals/job.yaml
+#   harbor run -c job.yaml
 jobs_dir: jobs
 n_attempts: 3 # trials per task per agent
 
@@ -21,13 +22,13 @@ environment:
 
 agents:
   - name: claude-code
-    model_name: anthropic/claude-fable-5
+    model_name: anthropic/claude-sonnet-4-6
     mcp_servers:
       - name: tastytrade
         transport: stdio
         command: mcp-baseline # runs the main-branch server
   - name: claude-code
-    model_name: anthropic/claude-fable-5
+    model_name: anthropic/claude-sonnet-4-6
     mcp_servers:
       - name: tastytrade
         transport: stdio

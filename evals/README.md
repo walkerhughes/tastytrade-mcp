@@ -47,17 +47,31 @@ python evals/generate_tasks.py
 
 ## Run it
 
+Harbor must run with `evals/` as the working directory, because it resolves the dataset path
+relative to where it is invoked. The `make` targets handle that for you, so run them from the
+repo root:
+
 ```bash
-# 1. Build the agent image. It clones both servers and the mock API.
-docker build -t tastytrade-bench evals/environment
-
-# 2. Run both servers over every task, three trials each.
 export ANTHROPIC_API_KEY=...
-harbor run -c evals/job.yaml
-
-# 3. Compare the two side by side.
-harbor view jobs
+make benchmark-build    # docker build -t tastytrade-bench evals/environment
+make benchmark          # cd evals && harbor run -c job.yaml
+make benchmark-view     # cd evals && harbor view jobs
 ```
+
+Or run Harbor directly, from inside `evals/`. Call it through `uv` and pin the version the
+tasks were validated against, so it doesn't depend on what's on your PATH:
+
+```bash
+cd evals
+docker build -t tastytrade-bench environment
+uv tool run --from "harbor==0.13.2" harbor run -c job.yaml
+uv tool run --from "harbor==0.13.2" harbor view jobs
+```
+
+Each task carries a one-line `environment/Dockerfile` (`FROM tastytrade-bench`). Harbor only
+discovers a directory as a task if it has an `environment/`, so this is required even though
+the task also sets `docker_image`. `make benchmark-build` creates the `tastytrade-bench` image
+they inherit.
 
 The tasks reference the image by name (`docker_image = "tastytrade-bench"`), so build it
 before the first run. Each trial's `result.json` records the reward, the phase timings, and
