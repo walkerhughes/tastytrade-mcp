@@ -11,7 +11,7 @@ from src.shaping.transactions import shape_transaction, summarize_transactions
 pytestmark = pytest.mark.unit
 
 
-# ── summarize ────────────────────────────────────────────────────
+# summarize
 
 
 def test_stats_ignores_non_numeric():
@@ -35,7 +35,7 @@ def test_max_drawdown():
     assert max_drawdown([100, 120, 90, 110]) == pytest.approx(0.25)
 
 
-# ── positions ────────────────────────────────────────────────────
+# positions
 
 
 def test_shape_position_short_pnl():
@@ -53,7 +53,7 @@ def test_shape_position_short_pnl():
     assert out["pnl"] == 200.0
 
 
-# ── transactions ─────────────────────────────────────────────────
+# transactions
 
 
 def test_summarize_transactions_signs_cash():
@@ -67,7 +67,7 @@ def test_summarize_transactions_signs_cash():
     assert s["by_type"]["Trade"] == 2
 
 
-# ── market data ──────────────────────────────────────────────────
+# market data
 
 
 def test_shape_quote_computes_mid_from_bid_ask():
@@ -75,7 +75,7 @@ def test_shape_quote_computes_mid_from_bid_ask():
     assert out["mid"] == 10.5
 
 
-# ── chain ────────────────────────────────────────────────────────
+# chain
 
 NESTED = [
     {

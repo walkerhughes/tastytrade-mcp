@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Start the mock Tastytrade API on :8080 if it isn't already running. Safe to call from
+# both server wrappers, since only the first call actually launches it.
+set -euo pipefail
+
+if curl -sf http://localhost:8080/oauth/token -X POST >/dev/null 2>&1; then
+  exit 0
+fi
+
+cd /opt/mcp-v2
+nohup uv run uvicorn tests.fixtures.mock_api.app:app --host 0.0.0.0 --port 8080 \
+  >/tmp/mock-api.log 2>&1 &
+
+for _ in $(seq 1 50); do
+  if curl -sf http://localhost:8080/oauth/token -X POST >/dev/null 2>&1; then
+    exit 0
+  fi
+  sleep 0.2
+done
+echo "mock API failed to start" >&2
+exit 1

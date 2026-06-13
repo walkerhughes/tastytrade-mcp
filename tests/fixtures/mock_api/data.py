@@ -223,6 +223,10 @@ EARNINGS = {
     "AAPL": {"data": {"items": [{"occurred-date": "2026-05-01", "eps": "1.52"}]}},
 }
 
+# Flat total fee the dry-run (order preview) endpoint reports, regardless of the order.
+# Kept here so the benchmark can read it from the same place the mock serves it.
+DRY_RUN_TOTAL_FEES = "1.16"
+
 # Equity + option quotes keyed by symbol. Option mids around the 200 strike are closest
 # (call 5.00 / put 5.00) so ATM detection lands on 200.
 QUOTES = {

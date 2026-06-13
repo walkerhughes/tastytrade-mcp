@@ -1,8 +1,8 @@
-"""Shape nested option chains: expirations listing, strike filtering, quote enrichment.
+"""Shape a nested option chain: list expirations, filter strikes, add quotes.
 
-This is the curated-tool centerpiece. The nested chain endpoint carries no quotes, so we
-filter strikes first, then enrich only the survivors with a single batched quote call —
-the token win and the analytical value-add live here.
+The nested chain endpoint carries no quotes, so we filter the strikes first and then fetch
+quotes for just those in one batched call. Doing it in that order is what keeps the response
+small and gives the summary something to work with.
 """
 
 from typing import Any

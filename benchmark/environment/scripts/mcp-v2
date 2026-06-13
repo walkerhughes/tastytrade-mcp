@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-# Launch the v2 (mcp-server-refactor) MCP server over stdio against the mock API.
-set -euo pipefail
-start-mock
-exec uv run --project /opt/mcp-v2 python -m src.server

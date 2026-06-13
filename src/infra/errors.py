@@ -1,9 +1,9 @@
-"""Guided error handling — the Honeycomb ``handleToolError`` analogue.
+"""Guided error handling, modeled on Honeycomb's ``handleToolError``.
 
-Tools never leak tracebacks to the model. Instead every failure becomes a small JSON
-object: a human-readable ``error`` plus a ``suggestions`` array of concrete next steps
-(often containing CORRECT/INCORRECT examples). This is what stops the model's
-fail → tweak → give-up doom loop.
+Tools never hand a traceback to the model. Every failure becomes a small JSON object: a
+readable ``error`` message and a ``suggestions`` list of concrete next steps, often with a
+correct example. That is what keeps the model from failing, adjusting, failing again, and
+giving up.
 """
 
 import functools
@@ -29,13 +29,13 @@ def error_response(message: str, suggestions: list[str] | None = None, **extra: 
     return json.dumps(payload, indent=2, default=str)
 
 
-# HTTP status → (human message, next-step suggestions). 422 is parsed from the body.
+# Maps an HTTP status to a readable message and next steps. 422 is parsed from the body.
 _HTTP_GUIDANCE: dict[int, tuple[str, list[str]]] = {
     401: (
         "Authentication failed.",
         [
             "Verify TT_CLIENT_ID, TT_SECRET, and TT_REFRESH are set and current.",
-            "The refresh token may have been revoked — re-authorize the OAuth client.",
+            "The refresh token may have been revoked, so re-authorize the OAuth client.",
         ],
     ),
     403: (

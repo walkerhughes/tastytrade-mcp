@@ -1,8 +1,8 @@
-"""Order request schemas — the heavily guard-railed write path.
+"""Schemas for an order, the write path that gets the most checking.
 
-Mirrors Honeycomb's ``run_query`` schema design: descriptions written *at* the model
-with CORRECT/INCORRECT examples, auto-correction in ``mode="before"``, and semantic
-validation (the ``superRefine`` analogue) in ``mode="after"``.
+These follow the same idea as Honeycomb's query schema. Field descriptions are written for
+the model and include correct and incorrect examples, ``mode="before"`` corrects the
+arguments, and ``mode="after"`` checks them and raises with a clear message.
 """
 
 from decimal import Decimal

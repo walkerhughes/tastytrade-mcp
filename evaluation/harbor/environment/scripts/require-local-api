@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Refuse to run unless the server points at the local mock API. This is the hard stop that
+# keeps the benchmark from ever reaching a real brokerage account, whatever the environment
+# happens to say.
+set -euo pipefail
+case "${API_BASE_URL:-}" in
+  http://localhost:* | http://127.0.0.1:*) exit 0 ;;
+esac
+echo "refusing to start: API_BASE_URL must point at the local mock API (got '${API_BASE_URL:-unset}')." >&2
+exit 1

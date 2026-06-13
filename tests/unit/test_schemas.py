@@ -7,7 +7,7 @@ from src.schemas.chain import ChainQuery
 from src.schemas.common import is_option_symbol, validate_date
 from src.schemas.orders import OrderLeg, OrderRequest
 
-# ── common ───────────────────────────────────────────────────────
+# common
 
 
 @pytest.mark.unit
@@ -24,7 +24,7 @@ def test_validate_date_rejects_bad_format():
     assert validate_date("2026-01-17") == "2026-01-17"
 
 
-# ── OrderLeg auto-correction ─────────────────────────────────────
+# OrderLeg auto-correction
 
 
 @pytest.mark.unit
@@ -51,7 +51,7 @@ def test_order_leg_rejects_zero_quantity():
         OrderLeg.model_validate({"action": "Buy", "symbol": "AAPL", "quantity": 0})
 
 
-# ── OrderRequest semantic validation ─────────────────────────────
+# OrderRequest semantic validation
 
 
 @pytest.mark.unit
@@ -93,7 +93,7 @@ def test_order_request_too_many_legs():
         OrderRequest.model_validate({"order_type": "Market", "legs": legs})
 
 
-# ── ChainQuery ───────────────────────────────────────────────────
+# ChainQuery
 
 
 @pytest.mark.unit

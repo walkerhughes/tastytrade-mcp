@@ -1,8 +1,8 @@
-"""Tier-1 deterministic evals: realistic LLM misuse must auto-correct or guide.
+"""Deterministic checks that realistic model mistakes get corrected or guided.
 
-These assert the *tool-level* contract (the Honeycomb lesson): predictable model mistakes
-are silently corrected when safe, and otherwise produce a guided error carrying
-suggestions — never a traceback or a silent wrong action. They run in CI via `make check`.
+These check the behavior at the tool boundary. A predictable mistake is corrected when that
+is safe, and otherwise the tool returns an error with suggestions rather than a traceback or
+a quietly wrong result. They run in CI through `make check`.
 """
 
 import json
@@ -28,7 +28,7 @@ DRY_RUN_OK = {
 
 
 async def test_lowercase_and_kebab_order_is_autocorrected(install_client):
-    """Model emits lowercase enums + kebab keys + string quantity — should just work."""
+    """Lowercase enums, kebab keys, and a string quantity should all just work."""
     install_client(FakeClient(DRY_RUN_OK))
     order = {
         "order-type": "limit",  # kebab key + lowercase value
