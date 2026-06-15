@@ -1,1 +1,1 @@
-"""Shared infrastructure: logging, errors, caching, correction, pagination."""
+"""Shared infrastructure: logging, errors, caching, correction."""

@@ -1,4 +1,4 @@
-"""Unit tests for infra: cache, correction, errors, pagination."""
+"""Unit tests for infra: cache, correction, errors."""
 
 import json
 
@@ -8,7 +8,6 @@ import pytest
 from src.infra.cache import TTLCache, access_collection
 from src.infra.correction import coerce_int, match_enum, normalize_key, normalize_keys, unwrap
 from src.infra.errors import error_response, guarded_tool
-from src.infra.pagination import PaginationParams
 
 # TTLCache
 
@@ -160,14 +159,3 @@ async def test_guarded_tool_passes_through_success():
         return "ok"
 
     assert await tool() == "ok"
-
-
-# pagination schema
-
-
-@pytest.mark.unit
-def test_pagination_defaults_and_bounds():
-    p = PaginationParams()
-    assert p.page == 1 and p.limit == 25
-    with pytest.raises(Exception):
-        PaginationParams(limit=10000)
