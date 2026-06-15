@@ -54,12 +54,3 @@ def match_enum(value: Any, choices: list[str]) -> Any:
         if canon(choice) == target:
             return choice
     return value
-
-
-def unwrap(data: Any, *keys: str) -> Any:
-    """Un-nest a single-key wrapper the model sometimes adds, e.g. ``{"order": {...}}``."""
-    if isinstance(data, dict) and len(data) == 1:
-        only_key = next(iter(data))
-        if only_key in keys:
-            return data[only_key]
-    return data

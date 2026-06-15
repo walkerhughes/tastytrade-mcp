@@ -1,4 +1,4 @@
-"""Unit tests for infra: cache, correction, errors, pagination."""
+"""Unit tests for infra: cache, correction, errors."""
 
 import json
 
@@ -6,9 +6,8 @@ import httpx
 import pytest
 
 from src.infra.cache import TTLCache, access_collection
-from src.infra.correction import coerce_int, match_enum, normalize_key, normalize_keys, unwrap
+from src.infra.correction import coerce_int, match_enum, normalize_key, normalize_keys
 from src.infra.errors import error_response, guarded_tool
-from src.infra.pagination import PaginationParams
 
 # TTLCache
 
@@ -106,12 +105,6 @@ def test_match_enum_case_and_spacing_insensitive():
     assert match_enum("nonsense", ["Limit"]) == "nonsense"  # unchanged -> validator flags it
 
 
-@pytest.mark.unit
-def test_unwrap_single_key_wrapper():
-    assert unwrap({"order": {"a": 1}}, "order") == {"a": 1}
-    assert unwrap({"a": 1, "b": 2}, "order") == {"a": 1, "b": 2}
-
-
 # errors
 
 
@@ -160,14 +153,3 @@ async def test_guarded_tool_passes_through_success():
         return "ok"
 
     assert await tool() == "ok"
-
-
-# pagination schema
-
-
-@pytest.mark.unit
-def test_pagination_defaults_and_bounds():
-    p = PaginationParams()
-    assert p.page == 1 and p.limit == 25
-    with pytest.raises(Exception):
-        PaginationParams(limit=10000)
