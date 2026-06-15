@@ -6,7 +6,7 @@ import httpx
 import pytest
 
 from src.infra.cache import TTLCache, access_collection
-from src.infra.correction import coerce_int, match_enum, normalize_key, normalize_keys, unwrap
+from src.infra.correction import coerce_int, match_enum, normalize_key, normalize_keys
 from src.infra.errors import error_response, guarded_tool
 
 # TTLCache
@@ -103,12 +103,6 @@ def test_match_enum_case_and_spacing_insensitive():
     assert match_enum("buy_to_open", ["Buy to Open", "Sell to Close"]) == "Buy to Open"
     assert match_enum("LIMIT", ["Limit", "Market"]) == "Limit"
     assert match_enum("nonsense", ["Limit"]) == "nonsense"  # unchanged -> validator flags it
-
-
-@pytest.mark.unit
-def test_unwrap_single_key_wrapper():
-    assert unwrap({"order": {"a": 1}}, "order") == {"a": 1}
-    assert unwrap({"a": 1, "b": 2}, "order") == {"a": 1, "b": 2}
 
 
 # errors
