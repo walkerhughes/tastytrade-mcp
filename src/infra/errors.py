@@ -11,13 +11,9 @@ import json
 from typing import Awaitable, Callable
 
 import httpx
+from pydantic import ValidationError
 
 from .logging import get_logger
-
-try:  # pydantic is a hard dependency, but keep the import resilient for partial installs
-    from pydantic import ValidationError
-except Exception:  # pragma: no cover
-    ValidationError = ()  # type: ignore[assignment,misc]
 
 
 def error_response(message: str, suggestions: list[str] | None = None, **extra: object) -> str:
@@ -93,7 +89,7 @@ def _from_http_error(exc: httpx.HTTPStatusError) -> str:
     return error_response(message, suggestions, status_code=status)
 
 
-def _from_validation_error(exc: "ValidationError") -> str:
+def _from_validation_error(exc: ValidationError) -> str:
     suggestions: list[str] = []
     for err in exc.errors():
         loc = ".".join(str(p) for p in err.get("loc", ()))
@@ -115,7 +111,7 @@ def guarded_tool(func: Callable[..., Awaitable[str]]) -> Callable[..., Awaitable
         except httpx.HTTPStatusError as exc:
             get_logger().warning("http_error tool=%s status=%s", func.__name__, exc.response.status_code)
             return _from_http_error(exc)
-        except ValidationError as exc:  # type: ignore[misc]
+        except ValidationError as exc:
             return _from_validation_error(exc)
         except httpx.HTTPError as exc:  # network/timeout
             return error_response(
